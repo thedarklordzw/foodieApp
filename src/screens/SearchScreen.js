@@ -2,38 +2,14 @@ import React, { useState, useEffect } from 'react';
 import SearchBar from '../components/SearchBar';
 import { Text, Image, StyleSheet, View, FlatList } from 'react-native';
 import { ACCESS_KEY } from '../util/helper';
+import useWeatherStack from '../hooks/useWeatherStack';
 import axios from 'axios';
 
 const SearchScreen = () => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [results, setResults] = useState([]);
-  const [error, setError] = useState(false);
-  const [weatherData, setWeatherData] = useState(false);
-  const [weather, setWeather] = useState({});
-
-  const getWeatherForeCast = async (place = 'Bulawayo') => {
-    try {
-      const { data } = await axios.get(
-        `http://api.weatherstack.com/forecast?access_key=${ACCESS_KEY}&query=${
-          searchTerm || place
-        }`
-      );
-
-      if (data.error) {
-        return setError(true);
-      } else {
-        const { current } = data;
-        setWeatherData(true);
-        setWeather(current);
-      }
-    } catch (error) {
-      throw new Error(error.stack);
-    }
-  };
+  const [weather, weatherData] = useWeatherStack();
 
   useEffect(() => {
-    getWeatherForeCast();
-
     console.log(weather.weather_icons);
   }, []);
 
@@ -41,9 +17,7 @@ const SearchScreen = () => {
     setSearchTerm(search);
   };
 
-  const termSubmitHandler = () => {
-    getWeatherForeCast();
-  };
+  const termSubmitHandler = () => {};
 
   const image = weatherData ? weather.weather_icons[0] : '';
 
